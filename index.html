@@ -1,0 +1,742 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>晶体组合游戏 | TA-Noosphere</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+        }
+        
+        body {
+            background-color: #121218;
+            color: #e0e0e0;
+            line-height: 1.6;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 900px;
+            width: 100%;
+            background: #1a1a25;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            border: 1px solid #2a2a3a;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #2a2a3a;
+        }
+        
+        h1 {
+            font-size: 32px;
+            color: #2196F3;
+            margin-bottom: 10px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+        
+        .subtitle {
+            color: #9e9eb1;
+            font-size: 16px;
+            font-style: italic;
+        }
+        
+        .game-area {
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+        }
+        
+        .target-section {
+            background-color: #161622;
+            border-radius: 8px;
+            padding: 20px;
+            border-left: 4px solid #2196F3;
+        }
+        
+        h2 {
+            color: #2196F3;
+            font-size: 22px;
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+        
+        .target-display {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+            margin-top: 15px;
+        }
+        
+        .crystal-target {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 10px 15px;
+            border-radius: 6px;
+            background-color: #1a1a25;
+            min-width: 80px;
+        }
+        
+        .crystal-color {
+            width: 50px;
+            height: 50px;
+            border-radius: 8px;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: #121218;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .blue { 
+            background: #002FA7;
+            border: 2px solid #4A90E2;
+        }
+        .yellow { 
+            background: #FFEB3B;
+            border: 2px solid #FFC107;
+        }
+        .green { 
+            background: #CDDC39;
+            border: 2px solid #8BC34A;
+        }
+        .purple { 
+            background: #8E24AA;
+            border: 2px solid #BA68C8;
+        }
+        
+        .crystal-count {
+            font-size: 18px;
+            font-weight: bold;
+            color: #2196F3;
+        }
+        
+        .selection-section {
+            background-color: #161622;
+            border-radius: 8px;
+            padding: 20px;
+            border-left: 4px solid #2196F3;
+        }
+        
+        .crystal-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(70px, 1fr));
+            gap: 12px;
+            margin: 20px 0;
+        }
+        
+        .crystal-slot {
+            width: 70px;
+            height: 70px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #2a2a3a;
+            border: 2px solid #3a3a4a;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: bold;
+            color: #e0e0e0;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .crystal-slot:hover {
+            border-color: #2196F3;
+            transform: translateY(-3px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+        }
+        
+        .crystal-slot.selected {
+            border-color: transparent;
+            transform: scale(1.05);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.4);
+        }
+        
+        .blue-slot { 
+            background: #002FA7;
+            color: white;
+        }
+        .yellow-slot { 
+            background: #FFEB3B;
+            color: #121218;
+        }
+        .green-slot { 
+            background: #CDDC39;
+            color: #121218;
+        }
+        .purple-slot { 
+            background: #8E24AA;
+            color: white;
+        }
+        
+        .control-section {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 15px;
+        }
+        
+        .step-indicator {
+            color: #2196F3;
+            font-weight: bold;
+            font-size: 16px;
+        }
+        
+        button {
+            background: #2196F3;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+        }
+        
+        button:hover {
+            background: #1976D2;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 10px rgba(0, 0, 0, 0.3);
+        }
+        
+        button:disabled {
+            background: #4a4a6a;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        
+        .calculation-section {
+            background-color: #161622;
+            border-radius: 8px;
+            padding: 20px;
+            border-left: 4px solid #2196F3;
+        }
+        
+        .math-formula {
+            font-family: 'Cambria', 'Times New Roman', serif;
+            font-size: 18px;
+            color: #2196F3;
+            background-color: #1a1a25;
+            padding: 15px;
+            border-radius: 6px;
+            margin: 15px 0;
+            text-align: center;
+            font-weight: bold;
+        }
+        
+        .explanation {
+            color: #b0b0c0;
+            font-size: 14px;
+            margin-top: 10px;
+            line-height: 1.5;
+        }
+        
+        .result-section {
+            background-color: #161622;
+            border-radius: 8px;
+            padding: 20px;
+            border-left: 4px solid #2196F3;
+            display: none;
+        }
+        
+        .final-result {
+            font-size: 28px;
+            color: #2196F3;
+            text-align: center;
+            margin: 15px 0;
+            font-weight: bold;
+        }
+        
+        footer {
+            text-align: center;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #2a2a3a;
+            color: #6a6a7a;
+            font-size: 14px;
+        }
+        
+        .brand {
+            color: #2196F3;
+            font-weight: bold;
+        }
+        
+        .completion-message {
+            color: #4CAF50;
+            margin-top: 10px;
+            font-weight: bold;
+            display: none;
+        }
+        
+        .slot-number {
+            position: relative;
+            z-index: 2;
+            font-size: 16px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>晶体组合游戏</h1>
+            <p class="subtitle">探索多项式系数的组合原理 | TA-Noosphere</p>
+        </header>
+        
+        <div class="game-area">
+            <div class="target-section">
+                <h2>目标组合</h2>
+                <p>请为以下晶体组合选择相应的晶体格：</p>
+                <div class="target-display">
+                    <div class="crystal-target">
+                        <div class="crystal-color blue">蓝</div>
+                        <div class="crystal-count" id="blue-target">2</div>
+                    </div>
+                    <div class="crystal-target">
+                        <div class="crystal-color yellow">黄</div>
+                        <div class="crystal-count" id="yellow-target">3</div>
+                    </div>
+                    <div class="crystal-target">
+                        <div class="crystal-color green">绿</div>
+                        <div class="crystal-count" id="green-target">1</div>
+                    </div>
+                    <div class="crystal-target">
+                        <div class="crystal-color purple">紫</div>
+                        <div class="crystal-count" id="purple-target">4</div>
+                    </div>
+                </div>
+                <p class="explanation">总晶体格数: <span id="total-slots">10</span></p>
+            </div>
+            
+            <div class="selection-section">
+                <h2>晶体格选择</h2>
+                <p class="step-indicator">步骤 1: 选择 <span id="current-crystal">蓝</span> 晶体格 (<span id="current-count">0</span>/<span id="target-count">2</span>)</p>
+                
+                <div class="crystal-grid" id="crystal-grid">
+                    <!-- 晶体格将由JavaScript动态生成 -->
+                </div>
+                
+                <div class="completion-message" id="completion-message">
+                    步骤完成！请点击"下一步"继续。
+                </div>
+                
+                <div class="control-section">
+                    <button id="reset-btn">重置选择</button>
+                    <button id="next-btn" disabled>下一步</button>
+                </div>
+            </div>
+            
+            <div class="calculation-section">
+                <h2>组合计算</h2>
+                <div class="math-formula" id="calculation-formula">
+                    多项式系数 = C(10, 2) × C(8, 3) × C(5, 1) × C(4, 4)
+                </div>
+                <div class="explanation" id="calculation-explanation">
+                    多项式系数通过逐步分配实现组合计数。每一步选择都会减少问题规模，最终结果等于各步组合数的乘积。
+                </div>
+            </div>
+            
+            <div class="result-section" id="result-section">
+                <h2>结果</h2>
+                <div class="final-result" id="final-result">
+                    总方式数: 12,600
+                </div>
+                <div class="explanation">
+                    这个数字表示实现目标组合的所有不同方式。它等于多项式系数：n!/(k₁!k₂!k₃!k₄!) = 10!/(2!3!1!4!) = 12,600
+                </div>
+                <div class="control-section">
+                    <button id="new-game-btn">新游戏</button>
+                </div>
+            </div>
+        </div>
+        
+        <footer>
+            <p><span class="brand">TA-Noosphere</span> · 认知净制实验室</p>
+        </footer>
+    </div>
+
+    <script>
+        // 游戏状态
+        const gameState = {
+            targets: {
+                blue: 2,
+                yellow: 3,
+                green: 1,
+                purple: 4
+            },
+            currentStep: 0,
+            steps: ['blue', 'yellow', 'green', 'purple'],
+            selectedSlots: {
+                blue: [],
+                yellow: [],
+                green: [],
+                purple: []
+            },
+            totalSlots: 10,
+            availableSlots: [] // 可用的晶体格编号
+        };
+
+        // DOM元素
+        const crystalGrid = document.getElementById('crystal-grid');
+        const currentCrystalElement = document.getElementById('current-crystal');
+        const currentCountElement = document.getElementById('current-count');
+        const targetCountElement = document.getElementById('target-count');
+        const nextButton = document.getElementById('next-btn');
+        const resetButton = document.getElementById('reset-btn');
+        const newGameButton = document.getElementById('new-game-btn');
+        const resultSection = document.getElementById('result-section');
+        const calculationFormula = document.getElementById('calculation-formula');
+        const calculationExplanation = document.getElementById('calculation-explanation');
+        const finalResult = document.getElementById('final-result');
+        const completionMessage = document.getElementById('completion-message');
+
+        // 初始化游戏
+        function initGame() {
+            // 初始化可用晶体格
+            gameState.availableSlots = Array.from({length: gameState.totalSlots}, (_, i) => i + 1);
+            
+            createCrystalSlots();
+            updateStepDisplay();
+            updateCalculation();
+        }
+
+        // 创建晶体格
+        function createCrystalSlots() {
+            crystalGrid.innerHTML = '';
+            
+            for (let i = 1; i <= gameState.totalSlots; i++) {
+                const slot = document.createElement('div');
+                slot.className = 'crystal-slot';
+                
+                const numberSpan = document.createElement('span');
+                numberSpan.className = 'slot-number';
+                numberSpan.textContent = i;
+                slot.appendChild(numberSpan);
+                
+                slot.dataset.id = i;
+                
+                // 检查这个晶体格是否已被选择
+                const isSelected = isSlotSelected(i);
+                if (isSelected) {
+                    const crystalType = getSlotCrystalType(i);
+                    slot.classList.add('selected');
+                    slot.classList.add(`${crystalType}-slot`);
+                } else if (gameState.availableSlots.includes(i)) {
+                    // 只有可用的晶体格才能点击
+                    slot.addEventListener('click', () => selectSlot(i));
+                } else {
+                    // 不可用的晶体格变灰
+                    slot.style.opacity = '0.5';
+                    slot.style.cursor = 'not-allowed';
+                }
+                
+                crystalGrid.appendChild(slot);
+            }
+        }
+
+        // 检查晶体格是否已被选择
+        function isSlotSelected(slotId) {
+            for (const crystalType of gameState.steps) {
+                if (gameState.selectedSlots[crystalType].includes(slotId)) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        // 获取晶体格的颜色类型
+        function getSlotCrystalType(slotId) {
+            for (const crystalType of gameState.steps) {
+                if (gameState.selectedSlots[crystalType].includes(slotId)) {
+                    return crystalType;
+                }
+            }
+            return null;
+        }
+
+        // 选择晶体格
+        function selectSlot(slotId) {
+            const currentCrystal = gameState.steps[gameState.currentStep];
+            const selected = gameState.selectedSlots[currentCrystal];
+            
+            // 检查是否已选择
+            const index = selected.indexOf(slotId);
+            if (index !== -1) {
+                // 取消选择
+                selected.splice(index, 1);
+                gameState.availableSlots.push(slotId); // 重新变为可用
+                updateSlotAppearance(slotId, false);
+            } else {
+                // 检查是否已达到目标数量
+                if (selected.length >= gameState.targets[currentCrystal]) {
+                    return;
+                }
+                
+                // 选择
+                selected.push(slotId);
+                // 从可用列表中移除
+                const availableIndex = gameState.availableSlots.indexOf(slotId);
+                if (availableIndex !== -1) {
+                    gameState.availableSlots.splice(availableIndex, 1);
+                }
+                updateSlotAppearance(slotId, true, currentCrystal);
+            }
+            
+            updateStepDisplay();
+        }
+
+        // 更新晶体格外观
+        function updateSlotAppearance(slotId, isSelected, crystalType = null) {
+            const slot = document.querySelector(`.crystal-slot[data-id="${slotId}"]`);
+            
+            if (isSelected) {
+                slot.classList.add('selected');
+                if (crystalType) {
+                    slot.classList.add(`${crystalType}-slot`);
+                }
+            } else {
+                slot.classList.remove('selected');
+                slot.classList.remove('blue-slot');
+                slot.classList.remove('yellow-slot');
+                slot.classList.remove('green-slot');
+                slot.classList.remove('purple-slot');
+            }
+        }
+
+        // 更新步骤显示
+        function updateStepDisplay() {
+            const currentCrystal = gameState.steps[gameState.currentStep];
+            const selectedCount = gameState.selectedSlots[currentCrystal].length;
+            const targetCount = gameState.targets[currentCrystal];
+            
+            currentCrystalElement.textContent = getCrystalName(currentCrystal);
+            currentCountElement.textContent = selectedCount;
+            targetCountElement.textContent = targetCount;
+            
+            // 更新下一步按钮状态
+            const isStepComplete = selectedCount === targetCount;
+            nextButton.disabled = !isStepComplete;
+            
+            // 显示/隐藏完成消息
+            if (isStepComplete) {
+                completionMessage.style.display = 'block';
+            } else {
+                completionMessage.style.display = 'none';
+            }
+            
+            // 如果所有步骤完成，显示结果
+            if (isGameComplete()) {
+                showResult();
+            }
+        }
+
+        // 检查游戏是否完成
+        function isGameComplete() {
+            for (const crystalType of gameState.steps) {
+                if (gameState.selectedSlots[crystalType].length !== gameState.targets[crystalType]) {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        // 获取晶体名称
+        function getCrystalName(type) {
+            const names = {
+                blue: '蓝',
+                yellow: '黄',
+                green: '绿',
+                purple: '紫'
+            };
+            return names[type];
+        }
+
+        // 下一步
+        nextButton.addEventListener('click', () => {
+            if (gameState.currentStep < gameState.steps.length - 1) {
+                gameState.currentStep++;
+                createCrystalSlots(); // 重新创建晶体格以更新可用性
+                updateStepDisplay();
+                updateCalculation();
+            } else if (isGameComplete()) {
+                showResult();
+            }
+        });
+
+        // 重置选择
+        resetButton.addEventListener('click', () => {
+            const currentCrystal = gameState.steps[gameState.currentStep];
+            const selected = gameState.selectedSlots[currentCrystal];
+            
+            // 将当前步骤选择的晶体格重新加入可用列表
+            selected.forEach(slotId => {
+                gameState.availableSlots.push(slotId);
+            });
+            
+            // 清空选择
+            gameState.selectedSlots[currentCrystal] = [];
+            
+            // 更新UI
+            createCrystalSlots();
+            updateStepDisplay();
+        });
+
+        // 新游戏
+        newGameButton.addEventListener('click', () => {
+            // 生成新的随机目标
+            generateRandomTargets();
+            
+            // 重置游戏状态
+            gameState.currentStep = 0;
+            gameState.selectedSlots = {
+                blue: [],
+                yellow: [],
+                green: [],
+                purple: []
+            };
+            gameState.availableSlots = Array.from({length: gameState.totalSlots}, (_, i) => i + 1);
+            
+            // 更新UI
+            updateTargetDisplay();
+            createCrystalSlots();
+            updateStepDisplay();
+            updateCalculation();
+            
+            // 隐藏结果
+            resultSection.style.display = 'none';
+        });
+
+        // 生成随机目标
+        function generateRandomTargets() {
+            const total = 10; // 总晶体格数
+            
+            // 生成4个随机数，总和为10
+            let remaining = total;
+            const targets = [];
+            
+            for (let i = 0; i < 3; i++) {
+                const max = remaining - (3 - i); // 确保每个目标至少为1
+                const value = Math.floor(Math.random() * max) + 1;
+                targets.push(value);
+                remaining -= value;
+            }
+            
+            // 最后一个目标取剩余值
+            targets.push(remaining);
+            
+            // 随机分配目标到不同晶体
+            const shuffled = targets.sort(() => Math.random() - 0.5);
+            
+            gameState.targets = {
+                blue: shuffled[0],
+                yellow: shuffled[1],
+                green: shuffled[2],
+                purple: shuffled[3]
+            };
+            
+            gameState.totalSlots = total;
+        }
+
+        // 更新目标显示
+        function updateTargetDisplay() {
+            document.getElementById('blue-target').textContent = gameState.targets.blue;
+            document.getElementById('yellow-target').textContent = gameState.targets.yellow;
+            document.getElementById('green-target').textContent = gameState.targets.green;
+            document.getElementById('purple-target').textContent = gameState.targets.purple;
+            document.getElementById('total-slots').textContent = gameState.totalSlots;
+        }
+
+        // 更新计算显示
+        function updateCalculation() {
+            const steps = [];
+            let remaining = gameState.totalSlots;
+            
+            for (let i = 0; i < gameState.steps.length; i++) {
+                const crystal = gameState.steps[i];
+                const count = gameState.targets[crystal];
+                
+                steps.push(`C(${remaining}, ${count})`);
+                remaining -= count;
+            }
+            
+            calculationFormula.textContent = `多项式系数 = ${steps.join(' × ')}`;
+            
+            // 更新解释
+            if (gameState.currentStep === 0) {
+                calculationExplanation.textContent = 
+                    "首先选择蓝晶体格。从所有晶体格中选择指定数量的蓝晶体格，方式数为C(10, 2)。";
+            } else if (gameState.currentStep === 1) {
+                calculationExplanation.textContent = 
+                    "然后选择黄晶体格。从剩余的晶体格中选择指定数量的黄晶体格，方式数为C(8, 3)。";
+            } else if (gameState.currentStep === 2) {
+                calculationExplanation.textContent = 
+                    "接着选择绿晶体格。从剩余的晶体格中选择指定数量的绿晶体格，方式数为C(5, 1)。";
+            } else {
+                calculationExplanation.textContent = 
+                    "最后剩余的晶体格自动分配给紫晶体。总方式数为各步组合数的乘积。";
+            }
+        }
+
+        // 显示结果
+        function showResult() {
+            // 计算多项式系数
+            const numerator = factorial(gameState.totalSlots);
+            const denominator = 
+                factorial(gameState.targets.blue) * 
+                factorial(gameState.targets.yellow) * 
+                factorial(gameState.targets.green) * 
+                factorial(gameState.targets.purple);
+            
+            const result = numerator / denominator;
+            
+            // 显示结果
+            finalResult.textContent = `总方式数: ${result.toLocaleString()}`;
+            resultSection.style.display = 'block';
+            
+            // 更新计算显示
+            calculationFormula.textContent = 
+                `多项式系数 = ${gameState.totalSlots}! / (${gameState.targets.blue}! × ${gameState.targets.yellow}! × ${gameState.targets.green}! × ${gameState.targets.purple}!)`;
+            
+            calculationExplanation.textContent = 
+                "多项式系数给出了实现目标组合的所有本质不同方式的总数。分母中的阶乘消除了同类晶体排列产生的冗余计数。";
+        }
+
+        // 阶乘函数
+        function factorial(n) {
+            if (n === 0 || n === 1) return 1;
+            let result = 1;
+            for (let i = 2; i <= n; i++) {
+                result *= i;
+            }
+            return result;
+        }
+
+        // 初始化游戏
+        initGame();
+    </script>
+</body>
+</html>
